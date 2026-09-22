@@ -1,0 +1,7 @@
+dissect==3.22
+dissect.target==3.25.1
+volatility3==2.28.0
+pyinstaller==6.22.3
+colorama==0.4.6
+capstone==5.0.9
+pycryptodome==3.23.0

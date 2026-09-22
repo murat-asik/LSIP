@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict');
+const {scopeContains,subnetFor}=require('../dist/main/modules/asset-discovery/scanners/network-scope');
+assert.equal(subnetFor('10.23.45.67','255.255.0.0'),'10.23.0.0/16');
+assert.equal(subnetFor('192.168.2.35','255.255.255.240'),'192.168.2.32/28');
+assert.equal(scopeContains('192.168.2.32/28','192.168.2.47'),true);
+assert.equal(scopeContains('192.168.2.32/28','192.168.2.48'),false);
+assert.equal(scopeContains('127.0.0.1/32','127.0.0.2'),false);
+assert.throws(()=>scopeContains('127.0.0.1/33','127.0.0.1'));
+assert.throws(()=>scopeContains('999.0.0.1/24','127.0.0.1'));
+assert.throws(()=>subnetFor('10.0.0.1','255.0.255.0'));
+console.log('8 network scope assertions passed');

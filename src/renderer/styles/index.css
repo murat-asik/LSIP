@@ -1,0 +1,228 @@
+
+:root {
+  /* Colors - Cyberpunk/SOC Dark Theme */
+  --bg-primary: #070a13;          /* Dark space cadet */
+  --bg-secondary: #0c111e;        /* Dark blue-gray */
+  --bg-tertiary: #121929;         /* Dark navy slate */
+  --bg-elevated: #1a2336;         /* Elevated cards */
+  
+  --accent-primary: #2563eb;      /* Electric royal blue */
+  --accent-primary-hover: #3b82f6;
+  --accent-success: #059669;      /* Forest emerald */
+  --accent-warning: #d97706;      /* Deep amber */
+  --accent-danger: #dc2626;       /* Crimson red */
+  --accent-info: #4f46e5;         /* Indigo */
+  
+  --text-primary: #f8fafc;        /* High-contrast white */
+  --text-secondary: #94a3b8;      /* Slate gray */
+  --text-tertiary: #475569;       /* Muted slate */
+  
+  --border-primary: #1e293b;      /* Subtle border */
+  --border-hover: #334155;
+  --border-active: #2563eb;
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(12, 17, 30, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --glass-blur: blur(20px);
+  
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Cascadia Code', monospace;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.6);
+  --shadow-glow-blue: 0 0 15px rgba(37, 99, 235, 0.2);
+  --shadow-glow-red: 0 0 15px rgba(220, 38, 38, 0.25);
+  
+  /* Layout sizes */
+  --sidebar-width: 240px;
+  --sidebar-collapsed-width: 60px;
+  --topbar-height: 50px;
+  --statusbar-height: 25px;
+}
+
+[data-theme="light"] {
+  /* Colors - Enterprise Light Theme */
+  --bg-primary: #f8fafc;          /* Slate 50 */
+  --bg-secondary: #ffffff;        /* Pure White */
+  --bg-tertiary: #f1f5f9;         /* Slate 100 */
+  --bg-elevated: #ffffff;         /* Elevated cards */
+  
+  --accent-primary: #2563eb;      /* Electric royal blue */
+  --accent-primary-hover: #1d4ed8;
+  --accent-success: #059669;      /* Forest emerald */
+  --accent-warning: #d97706;      /* Deep amber */
+  --accent-danger: #dc2626;       /* Crimson red */
+  --accent-info: #4f46e5;         /* Indigo */
+  
+  --text-primary: #0f172a;        /* Slate 900 high contrast */
+  --text-secondary: #475569;      /* Slate 600 */
+  --text-tertiary: #94a3b8;       /* Slate 400 */
+  
+  --border-primary: #e2e8f0;      /* Light border Slate 200 */
+  --border-hover: #cbd5e1;        /* Slate 300 */
+  --border-active: #2563eb;
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-blur: blur(20px);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --shadow-glow-blue: 0 0 15px rgba(37, 99, 235, 0.15);
+  --shadow-glow-red: 0 0 15px rgba(220, 38, 38, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Enable mouse text selection across all readable content areas, panels & tables */
+.view-container,
+.fluent-card,
+.fluent-table,
+.selectable-content,
+p,
+td,
+th,
+li,
+code,
+pre,
+details,
+blockquote {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+
+/* Maintain non-selectability for interactive controls & navigation icons */
+button,
+.fluent-button,
+.badge,
+.status-pill,
+svg,
+select,
+option {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+code, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+/* =====================================================================
+   ROOT LAYOUT — AppShell three-zone shell:
+   app-container (column) → main-layout (row) → content-container (column)
+
+   Every container in this chain MUST have:
+     overflow: hidden   — prevents this node from expanding beyond the viewport
+     min-height: 0      — overrides the flex default of min-height:auto which
+                          causes children to push parents beyond their allocated bounds
+     min-width: 0       — same for the horizontal axis
+
+   Without these three properties on EVERY ancestor, flex items expand to their
+   intrinsic content size and the StatusBar gets pushed off-screen, clipping
+   every page in the application.
+   ===================================================================== */
+
+.app-container {
+  /* Root shell — owns 100% of the viewport. Column: [TopBar | Body | StatusBar] */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+}
+
+.main-layout {
+  /* Body row — Sidebar | ContentArea. flex:1 fills remaining space. */
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  /* min-height:0 is MANDATORY. Without it this flex item expands to its children's
+     intrinsic height, pushing StatusBar off-screen and clipping every page. */
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.content-container {
+  /* Right side of the body row. Column: [TopBar | ScrollArea | StatusBar] */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-secondary);
+  /* overflow:hidden clips this container to .main-layout's bounds. Without it,
+     content-container grows to the tallest view's height, making StatusBar unreachable. */
+  overflow: hidden;
+  min-height: 0;
+  min-width: 0;
+}
+
+.page-scroll {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: auto; /* THIS IS THE ONLY ELEMENT THAT MAY SCROLL */
+  min-height: 0;
+  min-width: 0;
+}
+
+.view-container {
+  /* Scroll viewport for every page view. All page content lives here. */
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 0;
+  min-width: 0;
+}

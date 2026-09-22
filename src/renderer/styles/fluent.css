@@ -1,0 +1,184 @@
+/* Fluent UI & Glassmorphism Utilities */
+
+.fluent-glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-md);
+}
+
+.fluent-card {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fluent-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.fluent-input {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-bottom: 2px solid var(--border-primary);
+  border-radius: 4px;
+  color: var(--text-primary);
+  padding: 8px 12px;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-bottom-color 0.2s ease, background-color 0.2s ease;
+}
+
+.fluent-input:focus {
+  background-color: var(--bg-tertiary);
+  border-bottom-color: var(--accent-primary);
+}
+
+.fluent-button {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.fluent-button:hover {
+  background-color: var(--border-primary);
+  border-color: var(--border-hover);
+}
+
+.fluent-button.primary {
+  background-color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.fluent-button.primary:hover {
+  background-color: var(--accent-primary-hover);
+  border-color: var(--accent-primary-hover);
+}
+
+/* Virtual Table styling */
+.fluent-table-container {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  background-color: var(--bg-tertiary);
+  min-height: 0;
+  min-width: 0;
+}
+
+.fluent-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.fluent-table th {
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-weight: 600;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-primary);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.fluent-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fluent-table tr:hover {
+  background-color: var(--bg-elevated);
+  cursor: pointer;
+}
+
+/* Status Indicators */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-pill.success {
+  background-color: rgba(5, 150, 105, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(5, 150, 105, 0.3);
+}
+
+.status-pill.warning {
+  background-color: rgba(217, 119, 6, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(217, 119, 6, 0.3);
+}
+
+.status-pill.danger {
+  background-color: rgba(220, 38, 38, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+}
+
+.status-pill.info {
+  background-color: rgba(79, 70, 229, 0.15);
+  color: #818cf8;
+  border: 1px solid rgba(79, 70, 229, 0.3);
+}
+
+/* Generic States */
+.fluent-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 200px;
+  color: var(--text-tertiary);
+  text-align: center;
+  gap: 12px;
+}
+
+.fluent-empty-state svg {
+  color: var(--border-hover);
+  opacity: 0.6;
+}
+
+.fluent-empty-state h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.fluent-empty-state p {
+  font-size: 0.85rem;
+  max-width: 300px;
+}
+
+.fluent-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
