@@ -1358,7 +1358,17 @@
     "backupOwner": "Yedek başka bir Windows hesabına veya bilgisayara ait",
     "backupOutside": "Uygulama veri dizini dışında bir yedek klasörü seçin",
     "eventReset": "Olay günlüğünün sıfırlandığı veya saklama nedeniyle kayıt kaybı olduğu algılandı; mevcut kayıtlar yeniden okunuyor.",
-    "ruleContent": "Geçersiz kural içeriği"
+    "ruleContent": "Geçersiz kural içeriği",
+    "providerDenied": "Erişim reddedildi",
+    "providerLimited": "Kota sınırına ulaşıldı",
+    "providerCancelled": "İptal edildi",
+    "providerTimeout": "Zaman aşımı",
+    "requestCancelled": "İstek iptal edildi.",
+    "requestTimeout": "İstek zaman aşımına uğradı.",
+    "invalidUrlhaus": "URLhaus geçersiz yanıt döndürdü",
+    "invalidIpqs": "IPQualityScore geçersiz yanıt döndürdü",
+    "invalidGreynoise": "GreyNoise geçersiz yanıt döndürdü",
+    "invalidShodan": "Shodan geçersiz yanıt döndürdü"
   },
   "forensic": {
     "diskHelp": "Dissect ile disk imajını veya bağlanmış Windows dizinini analiz edin. Bu bilgisayar için local yazın. Korunan kalıntılara erişim yönetici yetkisi gerektirir. Kaynaklar salt okunur işlenir. Analiz başına en fazla 1.000 kayıt gösterilir.",

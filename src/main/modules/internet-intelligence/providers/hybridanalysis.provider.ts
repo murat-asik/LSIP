@@ -42,8 +42,8 @@ export class HybridAnalysisProvider extends BaseIntelligenceProvider {
       return {
         indicator,
         type,
-        risk: 'none',
-        confidence: 100,
+        risk: 'unknown',
+        confidence: 0,
         source: this.id,
         providerName: this.name,
         isConfigured: true,
@@ -111,7 +111,7 @@ export class HybridAnalysisProvider extends BaseIntelligenceProvider {
       return true;
     } catch (err: any) {
       this.log.warn(`Health check failed for ${this.name}: ${err.message}`);
-      return false;
+      throw err;
     }
   }
 }

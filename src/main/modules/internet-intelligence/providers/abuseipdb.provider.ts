@@ -21,13 +21,6 @@ export class AbuseIPDBProvider extends BaseIntelligenceProvider {
     const apiKey = this.config!.apiKey!;
     const url = `https://api.abuseipdb.com/api/v2/check?ipAddress=${encodeURIComponent(indicator)}&maxAgeInDays=90&verbose`;
 
-    console.log(`===========================
-[FORENSIC DEBUG] AbuseIPDBProvider
-===========================
-Request URL: ${url}
-API Key loaded? ${apiKey ? 'YES' : 'NO'} (Length: ${apiKey ? apiKey.length : 0})
-Request executed? YES
-Headers: Key=${apiKey ? '***LOADED***' : 'MISSING'}, Accept=application/json`);
 
     const response = await httpClient.request(url, {
       method: 'GET',
@@ -38,12 +31,6 @@ Headers: Key=${apiKey ? '***LOADED***' : 'MISSING'}, Accept=application/json`);
       timeoutMs: this.config?.timeoutMs || 10000,
     });
 
-    console.log(`===========================
-[FORENSIC DEBUG] AbuseIPDB Response
-===========================
-HTTP Status: ${response.status}
-Raw JSON Response: ${JSON.stringify(response.data, null, 2)}
-===========================`);
 
     const data = response.data?.data;
     if (!data) {
@@ -88,12 +75,11 @@ Raw JSON Response: ${JSON.stringify(response.data, null, 2)}
         countryName: data.countryName,
         ipVersion: data.ipVersion,
       },
-      rawResponse: data,
+      rawResponse: response.data,
       httpStatus: response.status,
       requestDurationMs: response.durationMs,
     };
 
-    console.log('[ABUSEIPDB] OUTPUT OBJECT (Mapped):', JSON.stringify(resultObject, null, 2));
 
     return resultObject;
   }
@@ -106,7 +92,7 @@ Raw JSON Response: ${JSON.stringify(response.data, null, 2)}
       return true;
     } catch (err: any) {
       this.log.warn(`Health check failed for ${this.name}: ${err.message}`);
-      return false;
+      throw err;
     }
   }
 }

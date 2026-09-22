@@ -8,7 +8,7 @@ export class UrlHausProvider extends BaseIntelligenceProvider {
 
   public readonly capabilities: ProviderCapabilities = {
     supportedTypes: ['ip', 'domain', 'url'],
-    requiresApiKey: false,
+    requiresApiKey: true,
     supportsBulk: false,
   };
 
@@ -17,6 +17,7 @@ export class UrlHausProvider extends BaseIntelligenceProvider {
       throw new Error(`Indicator type ${type} is not supported by ${this.name}`);
     }
 
+    this.checkApiKeyRequired();
     let url = '';
     let body: any = null;
 
@@ -31,6 +32,7 @@ export class UrlHausProvider extends BaseIntelligenceProvider {
     const response = await httpClient.request(url, {
       method: 'POST',
       headers: {
+        'Auth-Key': this.config!.apiKey!,
         'Content-Type': 'application/x-www-form-urlencoded',
         'Accept': 'application/json',
       },
@@ -39,12 +41,13 @@ export class UrlHausProvider extends BaseIntelligenceProvider {
     });
 
     const data = response.data;
-    if (!data || data.query_status === 'no_results') {
+    if (!data || !['ok', 'no_results'].includes(data.query_status)) throw new Error('Invalid payload received from URLhaus API');
+    if (data.query_status === 'no_results') {
       return {
         indicator,
         type,
-        risk: 'none',
-        confidence: 100,
+        risk: 'unknown',
+        confidence: 0,
         source: this.id,
         providerName: this.name,
         isConfigured: true,
@@ -98,7 +101,7 @@ export class UrlHausProvider extends BaseIntelligenceProvider {
       return true;
     } catch (err: any) {
       this.log.warn(`Health check failed for ${this.name}: ${err.message}`);
-      return false;
+      throw err;
     }
   }
 }

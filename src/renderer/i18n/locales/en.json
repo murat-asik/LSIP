@@ -1358,7 +1358,17 @@
     "backupOwner": "Backup belongs to another Windows account or machine",
     "backupOutside": "Choose a backup directory outside application data",
     "eventReset": "Event log reset or retention gap detected; reading available records again.",
-    "ruleContent": "Invalid rule content"
+    "ruleContent": "Invalid rule content",
+    "providerDenied": "Access Denied",
+    "providerLimited": "Rate Limited",
+    "providerCancelled": "Cancelled",
+    "providerTimeout": "Timeout",
+    "requestCancelled": "Request cancelled.",
+    "requestTimeout": "Request timed out.",
+    "invalidUrlhaus": "Invalid payload received from URLhaus API",
+    "invalidIpqs": "Invalid payload received from IPQualityScore API",
+    "invalidGreynoise": "Invalid payload received from GreyNoise API",
+    "invalidShodan": "Invalid payload received from Shodan API"
   },
   "forensic": {
     "diskHelp": "Analyze a disk image or a mounted Windows directory with Dissect. Enter local to inspect this computer. Access to protected artifacts requires administrator permissions. Source files are read only. Up to 1,000 records are shown per analysis.",

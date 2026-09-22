@@ -32,7 +32,7 @@ export class VirusTotalProvider extends BaseIntelligenceProvider {
         endpoint = `files/${encodeURIComponent(indicator)}`;
         break;
       case 'url':
-        const urlId = Buffer.from(indicator).toString('base64').replace(/=/g, '');
+        const urlId = Buffer.from(indicator).toString('base64url');
         endpoint = `urls/${urlId}`;
         break;
       default:
@@ -61,7 +61,7 @@ export class VirusTotalProvider extends BaseIntelligenceProvider {
 
     const confidence = totalCount > 0 ? Math.round((maliciousCount / totalCount) * 100) : 0;
 
-    let risk: RiskLevel = 'none';
+    let risk: RiskLevel = totalCount > 0 ? 'none' : 'unknown';
     if (maliciousCount >= 10) risk = 'critical';
     else if (maliciousCount >= 5) risk = 'high';
     else if (maliciousCount >= 2) risk = 'medium';
@@ -101,7 +101,7 @@ export class VirusTotalProvider extends BaseIntelligenceProvider {
       return true;
     } catch (err: any) {
       this.log.warn(`Health check failed for ${this.name}: ${err.message}`);
-      return false;
+      throw err;
     }
   }
 }

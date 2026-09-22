@@ -19,7 +19,7 @@ export class GreyNoiseProvider extends BaseIntelligenceProvider {
     this.checkApiKeyRequired();
 
     const apiKey = this.config!.apiKey!;
-    const url = `https://api.greynoise.io/v2/noise/quick/${encodeURIComponent(indicator)}`;
+    const url = `https://api.greynoise.io/v3/community/${encodeURIComponent(indicator)}`;
 
     const response = await httpClient.request(url, {
       method: 'GET',
@@ -31,7 +31,7 @@ export class GreyNoiseProvider extends BaseIntelligenceProvider {
     });
 
     const data = response.data;
-    if (!data) {
+    if (!data || typeof data.noise !== 'boolean' || typeof data.riot !== 'boolean') {
       throw new Error('Invalid payload received from GreyNoise API');
     }
 
@@ -39,7 +39,7 @@ export class GreyNoiseProvider extends BaseIntelligenceProvider {
     const isNoise = data.noise || false;
     const isRiot = data.riot || false;
 
-    let risk: RiskLevel = 'none';
+    let risk: RiskLevel = 'unknown';
     if (classification === 'malicious') risk = 'high';
     else if (isNoise) risk = 'medium';
     else if (isRiot) risk = 'none';
@@ -48,7 +48,7 @@ export class GreyNoiseProvider extends BaseIntelligenceProvider {
       indicator,
       type,
       risk,
-      confidence: classification === 'malicious' ? 85 : isNoise ? 50 : 10,
+      confidence: classification === 'malicious' ? 85 : isNoise ? 50 : isRiot ? 10 : 0,
       source: this.id,
       providerName: this.name,
       isConfigured: true,
@@ -67,7 +67,7 @@ export class GreyNoiseProvider extends BaseIntelligenceProvider {
       return true;
     } catch (err: any) {
       this.log.warn(`Health check failed for ${this.name}: ${err.message}`);
-      return false;
+      throw err;
     }
   }
 }

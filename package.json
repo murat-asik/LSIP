@@ -48,7 +48,7 @@
     "appId": "com.b0om.lsip",
     "productName": "LSIP v3.0",
     "directories": {
-      "output": "release/3.0.2"
+      "output": "release/3.0.2-updated"
     },
     "win": {
       "target": [

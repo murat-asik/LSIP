@@ -54,7 +54,7 @@ Kaynak deposu büyük üçüncü taraf çalıştırılabilir dosyalarını içer
 npm run package
 ```
 
-Bu komut üretim derlemesini yapar ve Electron Builder ile taşınabilir Windows paketi oluşturur. Sonuç `release/3.0.2/` klasöründedir. `win-unpacked/` ara paketleme çıktısıdır; son kullanıcıya taşınabilir EXE dağıtılır. Paketlemede Electron ve paketleme araçlarının ilk indirmesi için internet erişimi gerekebilir.
+Bu komut üretim derlemesini yapar ve Electron Builder ile taşınabilir Windows paketi oluşturur. Sonuç `release/3.0.2-updated/` klasöründedir. `win-unpacked/` ara paketleme çıktısıdır; son kullanıcıya taşınabilir EXE dağıtılır. Paketlemede Electron ve paketleme araçlarının ilk indirmesi için internet erişimi gerekebilir.
 
 ## Güvenlik doğrulaması
 
@@ -117,7 +117,7 @@ Bu depoda henüz bir açık kaynak lisansı belirtilmemiştir. Kaynakların yay�
 
 ## 3.0.2 doğrulama ve eklenti kullanımı
 
-Son düzeltmeler, test sonuçları ve henüz kapanmayan kabul başlıkları [durum dosyasında](docs/SURUM_KAPSAMI.md) bulunur. Yeni hata senaryoları `node scripts/enterprise-regression.cjs` ile; gerçek Electron, dosya ve SQLite kontrolleri `npx --no-install electron scripts/enterprise-integration.cjs` ile çalıştırılır.
+Desteklenen özellikler ve kullanım sınırları [kapsam belgesinde](docs/SURUM_KAPSAMI.md) bulunur. Yeni hata senaryoları `node scripts/enterprise-regression.cjs` ile; gerçek Electron, dosya ve SQLite kontrolleri `npx --no-install electron scripts/enterprise-integration.cjs` ile çalıştırılır.
 
 Eklenti dizini uygulamanın Windows kullanıcı verisi dizini altındaki `plugins` klasörüdür; çalışma dizinindeki rastgele `plugins` klasörü yüklenmez. Önce uygulamadan Eklentiler ekranını açın. Yalnızca incelediğiniz, güvendiğiniz JavaScript eklentilerini bu dizine koyun. Aynı dizinde `trusted-plugins.json` dosyası dosya adını küçük harfli SHA-256 değerine eşler:
 

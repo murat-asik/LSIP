@@ -26,13 +26,14 @@ export abstract class BaseIntelligenceProvider implements IIntelligenceProvider 
    */
   public async initialize(config: ProviderConfig): Promise<void> {
     const configChanged = this.config?.apiKey !== config.apiKey || this.config?.enabled !== config.enabled;
+    // Timeout, priority and quota edits must apply even when credentials did not change.
+    this.config = { ...config, rateLimit: { ...config.rateLimit } };
 
     if (this._isInitialized && !configChanged) {
       // Already initialized with same config — skip
       return;
     }
 
-    this.config = config;
     this._isInitialized = true;
     this.log.info(`Initialized ${this.name} (${this.id}). Enabled: ${config.enabled}`);
   }

@@ -1,6 +1,7 @@
 import { BaseIntelligenceProvider } from '../base-provider';
 import { IndicatorType, IntelligenceObject, ProviderCapabilities, RiskLevel } from '../types';
 import { httpClient } from '../http-client';
+import { isIP } from 'net';
 
 export class OtxProvider extends BaseIntelligenceProvider {
   public readonly id = 'otx';
@@ -22,7 +23,7 @@ export class OtxProvider extends BaseIntelligenceProvider {
     let otxType = '';
 
     switch (type) {
-      case 'ip': otxType = 'IPv4'; break;
+      case 'ip': otxType = isIP(indicator) === 6 ? 'IPv6' : 'IPv4'; break;
       case 'domain': otxType = 'domain'; break;
       case 'hash': otxType = 'file'; break;
       case 'url': otxType = 'url'; break;
@@ -60,8 +61,8 @@ export class OtxProvider extends BaseIntelligenceProvider {
       risk = 'medium';
       confidence = 70;
     } else {
-      risk = 'none';
-      confidence = 100;
+      risk = 'unknown';
+      confidence = 0;
     }
 
     return {
@@ -89,7 +90,7 @@ export class OtxProvider extends BaseIntelligenceProvider {
       return true;
     } catch (err: any) {
       this.log.warn(`Health check failed for ${this.name}: ${err.message}`);
-      return false;
+      throw err;
     }
   }
 }

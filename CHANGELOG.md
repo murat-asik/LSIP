@@ -2,6 +2,10 @@
 
 ## 3.0.2 — Kalıcı toplama, yedekleme ve kural geçmişi / 22 Eylül 2026
 
+- Aynı 3.0.2 sürümüne sağlayıcı düzeltmeleri dahil edildi: iptal/zaman aşımı ayrımı, yeniden deneme iptali, yetki/kota hataları, güncel URLhaus/GreyNoise uç noktaları, VirusTotal URL kimliği, Shodan alan adı ve OTX IPv6 sorguları.
+- Boş veya geçersiz sağlayıcı yanıtlarının doğrulanmış temiz sonuç gibi gösterilmesi düzeltildi. Ham sağlayıcı yanıtları tanılama günlüklerine yazılmaz.
+- Dağıtım dosyaları yenilendi; önceki 3.0.2 indirmeleriyle SHA-256 değerleri farklıdır. Yeni dosyalarda sürüm sayfasındaki güncel SHA256SUMS.txt değerlerini kullanın.
+
 - Windows olayları kanal bazında kalıcı kayıt imleciyle sayfalanır. Olaylar ve imleç aynı işlemde yazılır; günlük sıfırlanması/saklama kaybı uyarılır.
 - Toplayıcılarda boş sonuç, kısmi veri ve hata ayrı izlenir; ilgili sekmede kaynak uyarısı gösterilir. Başarısız yerel süreç okuması artık tüm süreçlerin kapandığı anlamına gelmez.
 - Ayarlara parola korumalı AES-256-GCM yedekleme ve yeniden başlatmada geri yükleme eklendi. WAL, çalışma alanı ve kanıt kasası birlikte alınır; manifest HMAC ile doğrulanır. Hatalı parola, bozuk içerik ve yol geçişi reddedilir. Kesilen geri yükleme önceki veriye döner. Yalnız aynı Windows hesabı/bilgisayarı desteklenir.

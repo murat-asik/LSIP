@@ -6,12 +6,17 @@ if (Test-Path -LiteralPath $targetRoot) { throw 'Destination already exists; cho
 $repo = Join-Path $targetRoot 'GitHub-Repo'
 $releases = Join-Path $targetRoot 'GitHub-Releases'
 New-Item -ItemType Directory -Path $repo,$releases | Out-Null
-foreach ($directory in @('src','docs')) {
+foreach ($directory in @('src')) {
     Copy-Item -LiteralPath (Join-Path $projectRoot $directory) -Destination $repo -Recurse
+}
+$publicDocs = Join-Path $repo 'docs'
+New-Item -ItemType Directory -Path $publicDocs | Out-Null
+foreach ($name in @('LSIP_Kurumsal_Kullanim_Kilavuzu.md','BILESEN_ENVANTERI.json','SURUM_KAPSAMI.md')) {
+    Copy-Item -LiteralPath (Join-Path $projectRoot "docs/$name") -Destination $publicDocs
 }
 $scriptDirectory=Join-Path $repo 'scripts'
 New-Item -ItemType Directory -Path $scriptDirectory | Out-Null
-foreach($name in @('maintenance-regression.cjs','backup-integration.cjs','event-pages-integration.cjs','workspace-integration.cjs','dev.js','enterprise-regression.cjs','enterprise-integration.cjs','build-user-guide.py','build-forensic-tools.ps1','forensic-helper.py','forensic-licenses.py','forensic-requirements.txt','setup-yara.ps1','prepare-delivery.ps1','dfir-integration.cjs','electron-security-smoke.cjs','localization-test.cjs','module-integration.cjs','network-scope-test.cjs','rule-engine-test.cjs','security-audit.cjs','security-regression.cjs','ui-integration.cjs','validate-packaged.cjs')) {
+foreach($name in @('provider-acceptance.cjs','forensic-negative-acceptance.cjs','upgrade-acceptance.cjs','prepare-customer-delivery.ps1','maintenance-regression.cjs','backup-integration.cjs','event-pages-integration.cjs','workspace-integration.cjs','dev.js','enterprise-regression.cjs','enterprise-integration.cjs','build-user-guide.py','build-forensic-tools.ps1','forensic-helper.py','forensic-licenses.py','forensic-requirements.txt','setup-yara.ps1','prepare-delivery.ps1','dfir-integration.cjs','electron-security-smoke.cjs','localization-test.cjs','module-integration.cjs','network-scope-test.cjs','rule-engine-test.cjs','security-audit.cjs','security-regression.cjs','ui-integration.cjs','validate-packaged.cjs')) {
     Copy-Item -LiteralPath (Join-Path $projectRoot "scripts/$name") -Destination $scriptDirectory
 }
 foreach ($name in @('.gitignore','README.md','CHANGELOG.md','SECURITY.md','package.json','package-lock.json','eslint.config.mjs','tsconfig.json','tsconfig.main.json','tsconfig.renderer.json','vite.config.ts')) {

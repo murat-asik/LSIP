@@ -10,19 +10,33 @@ export interface HttpRequestOptions {
 }
 export interface HttpResponse<T = any> { status: number; data: T; headers: Record<string,string>; durationMs: number; }
 export class IntelligenceHttpError extends Error {
-  readonly status?: number; readonly isRateLimit: boolean; readonly isTimeout: boolean; readonly rawResponseBody?: string;
-  constructor(message: string, options: { status?: number; isRateLimit?: boolean; isTimeout?: boolean; rawResponseBody?: string } = {}) {
+  readonly status?: number; readonly isRateLimit: boolean; readonly isTimeout: boolean; readonly isCancelled: boolean; readonly rawResponseBody?: string;
+  constructor(message: string, options: { status?: number; isRateLimit?: boolean; isTimeout?: boolean; isCancelled?: boolean; rawResponseBody?: string } = {}) {
     super(message); this.name = 'IntelligenceHttpError'; this.status = options.status;
     this.isRateLimit = options.isRateLimit || false; this.isTimeout = options.isTimeout || false;
+    this.isCancelled = options.isCancelled || false;
   }
 }
 export class IntelligenceHttpClient {
   private active = new Set<AbortController>();
+  private generation = 0;
   constructor() {
     eventBus.subscribe('connectivity:changed', ({ isOnlineMode }) => { if (!isOnlineMode) this.cancelAll(); });
     eventBus.subscribe('internet:policy-changed', () => this.cancelAll());
   }
-  public cancelAll() { for (const controller of this.active) controller.abort(); }
+  public cancelAll() { this.generation++; for (const controller of this.active) controller.abort(); }
+  private waitForRetry(milliseconds: number, signal?: AbortSignal): Promise<void> {
+    const controller = new AbortController(); this.active.add(controller);
+    return new Promise<void>((resolve, reject) => {
+      const cleanup = () => { clearTimeout(timer); this.active.delete(controller); signal?.removeEventListener('abort', cancel); controller.signal.removeEventListener('abort', aborted); };
+      const cancel = () => controller.abort();
+      const aborted = () => { cleanup(); reject(new IntelligenceHttpError('İstek iptal edildi.', { isCancelled: true })); };
+      const timer = setTimeout(() => { cleanup(); resolve(); }, milliseconds);
+      controller.signal.addEventListener('abort', aborted, { once: true });
+      signal?.addEventListener('abort', cancel, { once: true });
+      if (signal?.aborted) cancel();
+    });
+  }
   private assertOnline() {
     const config = configManager.getModuleConfig('internet-intelligence');
     if (!connectivityManager.getState().isOnlineMode || config.enabled === false || config.offlineMode === true) {
@@ -35,19 +49,21 @@ export class IntelligenceHttpClient {
     const timeout = integer(options.timeoutMs ?? 10000, 'Zaman aşımı', 60000);
     const retries = integer(options.retries ?? 2, 'Tekrar', 3, 0);
     const delay = integer(options.retryDelayMs ?? 1000, 'Tekrar aralığı', 10000);
+    const generation = this.generation;
     for (let attempt = 0; attempt <= retries; attempt++) {
       this.assertOnline();
-      if (options.signal?.aborted) throw new IntelligenceHttpError('İstek iptal edildi.');
+      if (options.signal?.aborted || generation !== this.generation) throw new IntelligenceHttpError('İstek iptal edildi.', { isCancelled: true });
       if (this.active.size >= 16) throw new IntelligenceHttpError('Eşzamanlı istek sınırı aşıldı.');
       const controller = new AbortController(); this.active.add(controller);
       const cancel = () => controller.abort();
       options.signal?.addEventListener('abort', cancel, { once: true });
-      const timer = setTimeout(cancel, timeout);
+      let timedOut = false;
+      const timer = setTimeout(() => { timedOut = true; cancel(); }, timeout);
       const started = Date.now();
       let rejectAbort: (() => void) | undefined;
       try {
         const aborted = new Promise<never>((_resolve,reject) => {
-          rejectAbort = () => reject(new IntelligenceHttpError('İstek iptal edildi veya zaman aşımına uğradı.', { isTimeout: true }));
+          rejectAbort = () => reject(new IntelligenceHttpError(timedOut ? 'İstek zaman aşımına uğradı.' : 'İstek iptal edildi.', { isTimeout: timedOut, isCancelled: !timedOut }));
           controller.signal.addEventListener('abort', rejectAbort, { once: true });
         });
         const operation = async (): Promise<HttpResponse<T>> => {
@@ -87,14 +103,15 @@ export class IntelligenceHttpClient {
         log.warn('Sağlayıcı isteği tamamlanamadı.', { host: parsed.hostname, status: error instanceof IntelligenceHttpError ? error.status : undefined });
         if (controller.signal.aborted || options.signal?.aborted || attempt === retries || (error instanceof IntelligenceHttpError && error.status && error.status < 500)) {
           if (error instanceof IntelligenceHttpError) throw error;
-          throw new IntelligenceHttpError('Sağlayıcı isteği başarısız.', { isTimeout: controller.signal.aborted });
+          throw new IntelligenceHttpError('Sağlayıcı isteği başarısız.', { isTimeout: timedOut, isCancelled: controller.signal.aborted && !timedOut });
         }
       } finally {
         clearTimeout(timer); this.active.delete(controller);
         options.signal?.removeEventListener('abort', cancel);
         if (rejectAbort) controller.signal.removeEventListener('abort', rejectAbort);
       }
-      await new Promise(resolve => setTimeout(resolve, delay * (attempt + 1)));
+      if (generation !== this.generation) throw new IntelligenceHttpError('İstek iptal edildi.', { isCancelled: true });
+      await this.waitForRetry(delay * (attempt + 1), options.signal);
     }
     throw new IntelligenceHttpError('İstek tamamlanamadı.');
   }

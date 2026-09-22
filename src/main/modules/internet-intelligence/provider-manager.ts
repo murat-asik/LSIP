@@ -391,16 +391,22 @@ export class ProviderManager {
         continue;
       }
 
+      if (!this.checkAndRecordRateLimit(id)) {
+        statuses[id] = { ok: false, message: 'Rate limit exceeded (HTTP 429)', status: 'Rate Limited' };
+        continue;
+      }
+
       try {
         await provider.initialize(config);
         const isHealthy = await provider.healthCheck();
         statuses[id] = {
           ok: isHealthy,
           message: isHealthy ? 'Connection successful' : 'API key invalid or service unreachable',
-          status: isHealthy ? 'Healthy' : 'Invalid API Key',
+          status: isHealthy ? 'Healthy' : 'Provider Offline',
         };
       } catch (err: any) {
-        statuses[id] = { ok: false, message: `Error: ${err.message}`, status: 'Network Error' };
+        const status = err.status === 401 ? 'Invalid API Key' : err.status === 403 ? 'Access Denied' : err.status === 429 ? 'Rate Limited' : err.isCancelled ? 'Cancelled' : err.isTimeout ? 'Timeout' : err.status >= 500 ? 'Provider Offline' : 'Network Error';
+        statuses[id] = { ok: false, message: err.status ? `HTTP ${err.status}` : status, status };
       }
     }
 
@@ -419,7 +425,7 @@ export class ProviderManager {
       const test = testResults[id];
 
       const enabled = config?.enabled ?? false;
-      const configured = !!(config?.apiKey && config.apiKey.trim() !== '');
+      const configured = !provider.capabilities.requiresApiKey || !!(config?.apiKey && config.apiKey.trim() !== '');
 
       let status = 'Disabled';
       if (!enabled) {

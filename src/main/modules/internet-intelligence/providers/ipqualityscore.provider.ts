@@ -30,8 +30,8 @@ export class IPQualityScoreProvider extends BaseIntelligenceProvider {
     });
 
     const data = response.data;
-    if (!data || data.success === false) {
-      throw new Error(data?.message || 'Invalid payload received from IPQualityScore API');
+    if (!data || data.success !== true || typeof data.fraud_score !== 'number' || !Number.isFinite(data.fraud_score) || data.fraud_score < 0 || data.fraud_score > 100) {
+      throw new Error('Invalid payload received from IPQualityScore API');
     }
 
     const fraudScore = data.fraud_score || 0;
@@ -68,7 +68,7 @@ export class IPQualityScoreProvider extends BaseIntelligenceProvider {
       return true;
     } catch (err: any) {
       this.log.warn(`Health check failed for ${this.name}: ${err.message}`);
-      return false;
+      throw err;
     }
   }
 }

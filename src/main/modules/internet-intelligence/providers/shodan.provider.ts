@@ -19,7 +19,8 @@ export class ShodanProvider extends BaseIntelligenceProvider {
     this.checkApiKeyRequired();
 
     const apiKey = this.config!.apiKey!;
-    const url = `https://api.shodan.io/shodan/host/${encodeURIComponent(indicator)}?key=${apiKey}`;
+    const endpoint = type === 'domain' ? 'dns/domain' : 'shodan/host';
+    const url = `https://api.shodan.io/${endpoint}/${encodeURIComponent(indicator)}?key=${encodeURIComponent(apiKey)}`;
 
     const response = await httpClient.request(url, {
       method: 'GET',
@@ -30,14 +31,14 @@ export class ShodanProvider extends BaseIntelligenceProvider {
     });
 
     const data = response.data;
-    if (!data) {
+    if (!data || (type === 'domain' ? typeof data.domain !== 'string' || !Array.isArray(data.data) : typeof data.ip_str !== 'string' || !Array.isArray(data.ports))) {
       throw new Error('Invalid payload received from Shodan API');
     }
 
     const openPortsCount = Array.isArray(data.ports) ? data.ports.length : 0;
     const vulnsCount = data.vulns ? Object.keys(data.vulns).length : 0;
 
-    let risk: RiskLevel = 'none';
+    let risk: RiskLevel = type === 'domain' ? 'unknown' : 'none';
     if (vulnsCount >= 5) risk = 'critical';
     else if (vulnsCount > 0 || openPortsCount >= 10) risk = 'high';
     else if (openPortsCount >= 3) risk = 'medium';
@@ -71,7 +72,7 @@ export class ShodanProvider extends BaseIntelligenceProvider {
       return true;
     } catch (err: any) {
       this.log.warn(`Health check failed for ${this.name}: ${err.message}`);
-      return false;
+      throw err;
     }
   }
 }

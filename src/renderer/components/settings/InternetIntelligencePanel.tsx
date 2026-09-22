@@ -333,7 +333,7 @@ export const InternetIntelligencePanel: React.FC = () => {
                         
                         {/* PART 10: Rich Provider Configuration Status */}
                         <span className={`status-pill ${getStatusBadgeClass(currentStatus)}`} style={{ fontSize: '0.68rem' }}>
-                          {currentStatus}
+                          {message(currentStatus)}
                         </span>
 
                         <span style={{ fontSize: '0.7rem', padding: '1px 6px', borderRadius: '4px', background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', color: 'var(--text-secondary)' }}> {translateText("interfaceText.message034")} {p.priority ?? 10}
