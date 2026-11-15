@@ -178,6 +178,7 @@ export const InternetIntelligencePanel: React.FC = () => {
   const getStatusBadgeClass = (status?: string) => {
     switch (status) {
       case 'Healthy': return 'success';
+      case 'API Key Not Added':
       case 'Waiting For Connection': return 'warning';
       case 'Disabled': return '';
       default: return 'danger';
@@ -305,7 +306,7 @@ export const InternetIntelligencePanel: React.FC = () => {
             const currentKeyInput = apiKeys[p.id] !== undefined ? apiKeys[p.id] : '';
             const vStatus = validationStatus[p.id];
 
-            const currentStatus = health?.status || (p.configured ? 'Configured' : 'Invalid API Key');
+            const currentStatus = health?.status || (p.configured ? 'Configured' : 'API Key Not Added');
 
             return (
               <div 

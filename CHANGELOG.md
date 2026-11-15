@@ -1,5 +1,18 @@
 # Sürüm notları
 
+## 3.0.3 — Bellek kullanımı ve kararlılık / 15 Kasım 2026
+
+- Olay Gezgini'nde mesajı boş olan Windows olayları arayüzün tamamını "UI Crashed" ekranına düşürüyordu; düzeltildi. Her sekme artık kendi hata sınırına sahiptir: bir sayfa hata verirse yalnız o sayfa "Yenile" seçeneğiyle hata gösterir, uygulamanın geri kalanı çalışmaya devam eder.
+- Ziyaret edilen her sekme gizlendikten sonra da bellekte kalıyordu. Artık yalnız son kullanılan 4 sekme bellekte tutulur; diğerleri kapatılır ve yeniden açıldığında yüklenir. Tüm sekmelerin gezildiği ölçümde arayüz süreci yaklaşık 175 MB'tan 67 MB'a, DOM düğümü sayısı 57.000'den 2.000'e indi.
+- Gösterge paneli gizliyken de 3 saniyede bir sorgu yapıyor ve her seferinde kullanılmayan bir yönetici denetimi için yeni `net session` süreci başlatıyordu. Panel artık yalnız görünürken yenilenir; yönetici denetimi süreç başına bir kez yapılır.
+- SQLite sayfa önbelleği veritabanı başına 64 MB'tan 8 MB'a indirildi (9 veritabanı için en kötü durum ~576 MB yerine ~72 MB). Geçici sıralama verileri bellek yerine diske yazılır.
+- Uyku moduna geçen Süreç Gezgini ve Bağlantı Haritası modülleri önbelleklerini bırakır. Boşta kalan işçi iş parçacıkları 30 saniye sonra tamamen kapanır.
+- Yeni kurulumlarda olay tablosu sınırı 1.000.000'dan 250.000 kayda indirildi. Mevcut ayar dosyaları korunur.
+- Paketlenmiş uygulamada konsol günlüğü kapatıldı; gösterge panelinin 3 saniyelik ayrıntılı izleme kayıtları hata ayıklama düzeyine alındı. Cam efekti bulanıklığı GPU yükünü azaltmak için 20px'ten 8px'e indirildi.
+- Eksik veya reddedilen API anahtarı ayrı gösterilir ve Ayarlar bağlantısı sunulur. Tehdit Avcılığı, port tarayıcısı ve istihbarat sorgusunda geçen süre, tekrar başlatma koruması ve açıklayıcı boş sonuç mesajları eklendi. Küçük Türkçe arayüz düzeltmeleri yapıldı.
+- ESLint yapılandırması UTF-16 kaydedildiği için okunamıyordu; UTF-8'e çevrildi ve `npm run lint` komutu eklendi. Kullanılmayan `src/preload/index.js` kaldırıldı.
+
+
 ## 3.0.2 — Kalıcı toplama, yedekleme ve kural geçmişi / 22 Eylül 2026
 
 - Aynı 3.0.2 sürümüne sağlayıcı düzeltmeleri dahil edildi: iptal/zaman aşımı ayrımı, yeniden deneme iptali, yetki/kota hataları, güncel URLhaus/GreyNoise uç noktaları, VirusTotal URL kimliği, Shodan alan adı ve OTX IPv6 sorguları.

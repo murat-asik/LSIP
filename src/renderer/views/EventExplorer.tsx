@@ -184,7 +184,8 @@ export const EventExplorer: React.FC = () => {
                 const isSelected = selectedEventId === e.id;
                 
                 // Truncate message for grid
-                const summary = e.message.split('\n')[0] || '';
+                // Some Windows events have no rendered message (null from FormatDescription).
+                const summary = (e.message ?? '').split('\n')[0] || '';
 
                 return (
                   <tr

@@ -31,7 +31,7 @@ export interface AppConfig {
 const DEFAULT_CONFIG: AppConfig = {
   database: {
     retentionDays: 90,
-    maxEventRows: 1000000,
+    maxEventRows: 250000, // full message + XML per row; 1M rows reached GB-scale events.db
   },
   scanning: {
     subnetScope: '', // empty means auto-detect

@@ -39,7 +39,10 @@ export const logger = winston.createLogger({
   ],
 });
 
-if (process.env.NODE_ENV !== 'production') {
+// Packaged builds have no NODE_ENV, so gate the console transport on app.isPackaged too.
+let isPackaged = false;
+try { isPackaged = app.isPackaged; } catch { /* non-electron context */ }
+if (process.env.NODE_ENV !== 'production' && !isPackaged) {
   logger.add(
     new winston.transports.Console({
       format: winston.format.combine(

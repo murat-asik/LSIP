@@ -67,8 +67,9 @@ const PerformanceMonitor = lazy(() => import('./views/PerformanceMonitor').then(
 // ─────────────────────────────────────────────────────────────────────────────
 // Error Boundary
 // ─────────────────────────────────────────────────────────────────────────────
-class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; error: any }> {
-  constructor(props: { children: React.ReactNode }) {
+interface ErrorBoundaryProps { children: React.ReactNode; scope?: string }
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, { hasError: boolean; error: any }> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null };
   }
@@ -76,9 +77,19 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
     return { hasError: true, error };
   }
   componentDidCatch(error: any, errorInfo: any) {
-    console.error('React ErrorBoundary caught error:', error, errorInfo);
+    console.error(`React ErrorBoundary caught error${this.props.scope ? ` in view '${this.props.scope}'` : ''}:`, error, errorInfo);
   }
   render() {
+    // A view-level boundary keeps one broken page from taking down the whole UI.
+    if (this.state.hasError && this.props.scope) {
+      return (
+        <div role="alert" style={{ padding: 24 }}>
+          <h3 style={{ color: 'var(--accent-danger)' }}>{translateText("interfaceText.message001")}</h3>
+          <pre style={{ whiteSpace: 'pre-wrap', color: 'var(--text-secondary)' }}>{this.state.error?.toString()}</pre>
+          <button className="fluent-button" onClick={() => this.setState({ hasError: false, error: null })}>{translateText('common.refresh')}</button>
+        </div>
+      );
+    }
     if (this.state.hasError) {
       return (
         <div style={{ color: 'red', padding: '20px', background: 'black' }}>
@@ -111,23 +122,22 @@ const ModuleLoadingFallback: React.FC = () => (
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Lazy View Renderer — mounts view on first visit, keeps mounted thereafter
+// Lazy View Renderer — mounts view on first visit and keeps only the most
+// recently used views mounted. Older hidden views are unmounted so their
+// tables, graphs and DOM are released (previously every visited view stayed
+// mounted forever, which grew renderer RAM with each new tab).
 // ─────────────────────────────────────────────────────────────────────────────
+const MAX_MOUNTED_VIEWS = 4;
+
 interface LazyViewProps {
   tabKey: string;
   isActive: boolean;
+  isMounted: boolean;
   children: React.ReactNode;
 }
 
-const LazyView: React.FC<LazyViewProps> = ({ tabKey, isActive, children }) => {
-  const hasBeenVisited = useRef(false);
-
-  if (isActive && !hasBeenVisited.current) {
-    hasBeenVisited.current = true;
-  }
-
-  // Only render if visited at least once — prevents all views mounting at startup
-  if (!hasBeenVisited.current) return null;
+const LazyView: React.FC<LazyViewProps> = ({ tabKey, isActive, isMounted, children }) => {
+  if (!isActive && !isMounted) return null;
 
   return (
     <div
@@ -140,7 +150,7 @@ const LazyView: React.FC<LazyViewProps> = ({ tabKey, isActive, children }) => {
         width: '100%',
       }}
     >
-      {children}
+      <ErrorBoundary scope={tabKey}>{children}</ErrorBoundary>
     </div>
   );
 };
@@ -171,13 +181,17 @@ export const App: React.FC = () => {
     }
   }, []);
 
+  // Most-recently-used tabs (active first); only these stay mounted.
+  const [recentTabs, setRecentTabs] = useState<string[]>([activeTab]);
+
   useEffect(() => {
     activateModule(activeTab);
+    setRecentTabs(current => [activeTab, ...current.filter(t => t !== activeTab)].slice(0, MAX_MOUNTED_VIEWS));
   }, [activeTab, activateModule]);
 
   // Helper to create view entry with lazy mount
   const view = (tabKey: string, component: React.ReactNode) => (
-    <LazyView key={tabKey} tabKey={tabKey} isActive={activeTab === tabKey}>
+    <LazyView key={tabKey} tabKey={tabKey} isActive={activeTab === tabKey} isMounted={recentTabs.includes(tabKey)}>
       {activationErrors[tabKey] ? <div role="alert" style={{ padding: 24 }}>
         <p>{activationErrors[tabKey]}</p>
         <button className="fluent-button" onClick={() => activateModule(tabKey)}>{translateText('common.refresh')}</button>

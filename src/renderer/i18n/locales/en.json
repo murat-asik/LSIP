@@ -1,4 +1,13 @@
 {
+  "operation": {
+    "running": "Processing… {seconds} s elapsed",
+    "unavailable": "The operation could not be completed. Review the error and try again.",
+    "huntInitial": "No query has been run yet. Enter a query and start the search.",
+    "noEvents": "The query completed, but there were no event records to evaluate.",
+    "noMatches": "The query completed. No matching events were found in the evaluated records.",
+    "scanInitial": "No scan has been run yet. Enter an authorized target and start the scan.",
+    "noPorts": "The scan completed. No open ports were found among the ports checked. This does not prove that the target is secure."
+},
   "workspaces": {
     "blue": "BLUE TEAM",
     "dfir": "DFIR",
@@ -1002,6 +1011,9 @@
     "loadedFromCache": "Loaded from SQLite Cache • Cached at {time} • TTL Remaining: {hours}h"
   },
   "interfaceText": {
+    "missingApiKey": "API Key Not Added",
+    "missingKeyHint": "Add API keys in Settings for the providers you want to use.",
+    "openSettings": "Open Settings",
     "message001": "UI Crashed",
     "message002": "Initializing Module...",
     "message003": "Prefetch Execution Parser",

@@ -1,3 +1,4 @@
+import { useOperationStatus } from '../hooks/use-operation-status';
 import { createViewPolling, stopViewPolling } from '../hooks/view-polling';
 import { message } from "../i18n";
 import { t as translateText } from "../i18n";
@@ -266,7 +267,8 @@ export const InternetInvestigation: React.FC = () => {
   const investigationResult = internetSession.investigationResult;
   const setInvestigationResult = (res: any) => setInternetSession({ investigationResult: res });
 
-  const [isSearching, setIsSearching] = useState(false);
+  const operation = useOperationStatus();
+  const isSearching = operation.busy;
 
   // Health and History state
   const [providerHealth, setProviderHealth] = useState<ProviderHealth[]>([]);
@@ -324,9 +326,9 @@ export const InternetInvestigation: React.FC = () => {
     const queryToUse = overrideIndicator || inputQuery.trim();
     const typeToUse = overrideType || detectedType;
 
-    if (!queryToUse) return;
+    if (!queryToUse || !operation.start()) return;
 
-    setIsSearching(true);
+
     setErrorDiagnostics(null);
 
     try {
@@ -376,7 +378,7 @@ export const InternetInvestigation: React.FC = () => {
         timestamp: Date.now(),
       });
     } finally {
-      setIsSearching(false);
+      operation.finish();
     }
   };
 
@@ -673,11 +675,12 @@ export const InternetInvestigation: React.FC = () => {
             style={{ padding: '0 24px', height: '42px', gap: '8px', fontSize: '0.88rem', fontWeight: 600 }}
           >
             {isSearching ? <RefreshCw className="spin" size={16} /> : <Search size={16} />}
-            {t('internetInvestigation.queryProviders')}
+            {isSearching ? t('operation.running', {seconds: operation.seconds}) : t('internetInvestigation.queryProviders')}
           </button>
         </div>
       </div>
 
+      {isSearching && <div role="status" style={{color: 'var(--text-secondary)'}}>{t('operation.running', {seconds: operation.seconds})}</div>}
       {/* ── ERROR DIAGNOSTIC CARD (TASK 1: Meaningful Error Diagnostics) ──── */}
       {errorDiagnostics && (
         <div className="fluent-card" style={{
@@ -1171,6 +1174,14 @@ export const InternetInvestigation: React.FC = () => {
       )}
 
       {/* ── SECTION 11: PROVIDER HEALTH & STATUS PANEL ────────────────────── */}
+      {providerHealth.some(p => p.enabled && !p.configured) && (
+        <div className="fluent-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '12px 16px' }}>
+          <span>{t('interfaceText.missingKeyHint')}</span>
+          <button className="fluent-button" onClick={() => useAppStore.getState().setActiveTab('settings')}>
+            {t('interfaceText.openSettings')}
+          </button>
+        </div>
+      )}
       <div className="fluent-card" style={{ padding: '16px', background: 'var(--bg-secondary)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', borderBottom: '1px solid var(--border-primary)', paddingBottom: '10px' }}>
           <Activity size={18} style={{ color: 'var(--accent-success)' }} />
@@ -1203,7 +1214,7 @@ export const InternetInvestigation: React.FC = () => {
                   <tr key={p.id}>
                     <td style={{ fontWeight: 600 }}>{p.name}</td>
                     <td>
-                      <span className={`status-pill ${p.status === 'Healthy' ? 'success' : p.status === 'Waiting For Connection' ? 'warning' : 'danger'}`}>
+                      <span className={`status-pill ${p.status === 'Healthy' ? 'success' : (p.status === 'Waiting For Connection' || p.status === 'API Key Not Added') ? 'warning' : 'danger'}`}>
                         {message(p.status)}
                       </span>
                     </td>

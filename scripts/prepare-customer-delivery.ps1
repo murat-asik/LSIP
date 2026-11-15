@@ -1,4 +1,4 @@
-param([string]$Version = '3.0.2')
+param([string]$Version = '3.0.3')
 $ErrorActionPreference = 'Stop'
 if ($Version -notmatch '^\d+\.\d+\.\d+$') { throw 'Invalid release version' }
 $projectRoot = Split-Path -Parent $PSScriptRoot

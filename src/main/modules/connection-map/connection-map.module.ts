@@ -26,8 +26,13 @@ export class ConnectionMapModule extends BaseModule {
     this.logger.info('Connection Map Module initialized.');
   }
 
+  protected async onSleep(): Promise<void> {
+    ConnectionTracker.clearCaches();
+  }
+
   public async shutdown(): Promise<void> {
     this.logger.info('Shutting down Connection Map Module...');
+    ConnectionTracker.clearCaches();
     if (this.syncTimer) {
       clearInterval(this.syncTimer);
       this.syncTimer = null;

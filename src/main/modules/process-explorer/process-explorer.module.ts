@@ -58,8 +58,13 @@ export class ProcessExplorerModule extends BaseModule {
     this.logger.info('Process Explorer Module initialized.');
   }
 
+  protected async onSleep(): Promise<void> {
+    ProcessCollector.clearCaches();
+  }
+
   public async shutdown(): Promise<void> {
     this.logger.info('Shutting down Process Explorer Module...');
+    ProcessCollector.clearCaches();
     if (this.pollingTimer) {
       clearInterval(this.pollingTimer);
       this.pollingTimer = null;

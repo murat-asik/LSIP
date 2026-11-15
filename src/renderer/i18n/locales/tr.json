@@ -1,4 +1,13 @@
 {
+  "operation": {
+    "running": "İşlem sürüyor… Geçen süre: {seconds} sn",
+    "unavailable": "İşlem tamamlanamadı. Hata açıklamasını inceleyip yeniden deneyin.",
+    "huntInitial": "Henüz sorgu çalıştırılmadı. Sorguyu girip aramayı başlatın.",
+    "noEvents": "Sorgu tamamlandı ancak değerlendirilebilecek olay kaydı yoktu.",
+    "noMatches": "Sorgu tamamlandı. İncelenen kayıtlarda eşleşen olay bulunamadı.",
+    "scanInitial": "Henüz tarama yapılmadı. Yetkili olduğunuz hedefi girip taramayı başlatın.",
+    "noPorts": "Tarama tamamlandı. Kontrol edilen portlar arasında açık port bulunamadı. Bu sonuç hedefin güvenli olduğunu kanıtlamaz."
+},
   "workspaces": {
     "blue": "MAVİ TAKIM",
     "dfir": "ADLİ BİLİŞİM",
@@ -10,7 +19,7 @@
     "netTopology": "Ağ Topolojisi",
     "connMonitor": "Bağlantı İzleyici",
     "processExplorer": "Süreç Gezgini",
-    "threadExplorer": "İz (Thread) Gezgini",
+    "threadExplorer": "İş Parçacığı Gezgini",
     "dllDependency": "DLL Bağımlılıkları",
     "eventExplorer": "Olay Gezgini",
     "timelineView": "Zaman Çizelgesi",
@@ -27,9 +36,9 @@
     "reportGenerator": "Rapor Oluşturucu",
     "pluginSystem": "Eklenti Sistemi",
     "settings": "Ayarlar",
-    "evidenceCustody": "Kanıt & Gözetim Chain",
+    "evidenceCustody": "Kanıt ve Muhafaza Zinciri",
     "memoryAnalysis": "Bellek Analizi",
-    "registryExplorer": "Registry Gezgini",
+    "registryExplorer": "Kayıt Defteri Gezgini",
     "prefetchParser": "Prefetch Ayrıştırıcı",
     "amcacheParser": "Amcache Ayrıştırıcı",
     "shimcacheParser": "ShimCache Ayrıştırıcı",
@@ -61,7 +70,7 @@
     "noInternet": "İNTERNET YOK",
     "connect": "Bağlan",
     "disconnect": "Kopart",
-    "cpu": "İÇB (CPU)",
+    "cpu": "İşlemci (CPU)",
     "ram": "BELLEK (RAM)",
     "disk": "DİSK",
     "themeLight": "Açık Mod",
@@ -284,7 +293,7 @@
     "subtitle": "Süreç izleme numaralandırma, öncelikler ve bekleme durumları",
     "searchPlaceholder": "Süreç veya PID ara...",
     "refresh": "Yenile",
-    "totalThreads": "Toplam İz (Thread)",
+    "totalThreads": "Toplam İş Parçacığı",
     "activeProcesses": "Aktif Süreçler",
     "highPriority": "Yüksek Öncelik",
     "process": "Süreç",
@@ -636,7 +645,7 @@
     "suspicious": "Şüpheli"
   },
   "dfirRegistry": {
-    "title": "Çevrimdışı Registry Kovan Gezgini",
+    "title": "Çevrimdışı Kayıt Defteri Kovan Gezgini",
     "subtitle": "SYSTEM, SOFTWARE, NTUSER.DAT registry kovan ayrıştırıcısı ve anahtar değişiklik denetimi.",
     "hive": "Kovan",
     "keyPath": "Anahtar Yolu",
@@ -798,7 +807,7 @@
     "attackSurfaceOverviewText": "Yerel konak ve taranan ağ alt ağları, {totalExposedPorts} açık servis uç noktasına sahip {assetsCount} izlenen varlık göstermektedir. Temel vektör riskleri uzaktan yönetim protokolleri (SSH/RDP) ve web servisleri etrafında yoğunlaşmaktadır."
   },
   "redTeamView": {
-    "portScannerTitle": "Yerel Port Tarayıcı & Servis Banner Numaralandırıcı",
+    "portScannerTitle": "Yerel Port Tarayıcı ve Servis Bilgileri",
     "portScannerSubtitle": "Saldırgan olmayan ağ port taraması, gecikme ölçümü ve servis banner edinimi.",
     "httpTitle": "HTTP Güvenlik & SSL Sertifika Denetleyicisi",
     "httpSubtitle": "HTTP güvenlik başlıklarını (HSTS, CSP, CORS, XFO) ve TLS x509 sertifika zincirlerini inceleyin.",
@@ -984,7 +993,7 @@
     "subtitle": "SMB protokol oturum denetimi, açık ağ paylaşımları ve adlandırılmış boru (named pipe) izleme."
   },
   "threadExplorer": {
-    "title": "Süreç İz (Thread) Gezgini",
+    "title": "Süreç İş Parçacığı Gezgini",
     "subtitle": "Yerel süreç thread stack incelemesi, başlangıç adresi doğrulaması ve thread durumu denetimi."
   },
   "diagnostics": {
@@ -1002,6 +1011,9 @@
     "loadedFromCache": "SQLite Önbelleğinden Yüklendi • Önbellek Zamanı: {time} • Kalan TTL: {hours}s"
   },
   "interfaceText": {
+    "missingApiKey": "API anahtarı eklenmedi",
+    "missingKeyHint": "Kullanmak istediğiniz sağlayıcıların API anahtarlarını Ayarlar bölümünden ekleyin.",
+    "openSettings": "Ayarları aç",
     "message001": "Arayüz hatası",
     "message002": "Modül başlatılıyor...",
     "message003": "Prefetch Çalıştırma Ayrıştırıcısı",

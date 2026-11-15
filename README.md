@@ -1,4 +1,4 @@
-# LSIP 3.0.2
+# LSIP 3.0.3
 
 **Local Security Intelligence Platform**, Windows üzerinde yerel sistem ve ağ verilerini incelemek için geliştirilen bir masaüstü uygulamasıdır. Electron, React, TypeScript ve SQLite kullanır. Türkçe ve İngilizce arayüz içerir.
 
@@ -21,7 +21,7 @@ Kılavuzun [kaynak metni](docs/LSIP_Kurumsal_Kullanim_Kilavuzu.md) de depoda bul
 
 ## Hazır EXE ile çalıştırma
 
-Sık kullanım için **LSIP_Windows_x64_3.0.2.zip** paketini bir klasöre çıkarıp içindeki **LSIP v3.0.exe** dosyasını çalıştırın. EXE ile birlikte gelen `resources` ve diğer dosyaları aynı klasörde tutun. Bu yöntem her açılışta yeniden arşiv çıkarılmasını önler.
+Sık kullanım için **LSIP_Windows_x64_3.0.3.zip** paketini bir klasöre çıkarıp içindeki **LSIP v3.0.exe** dosyasını çalıştırın. EXE ile birlikte gelen `resources` ve diğer dosyaları aynı klasörde tutun. Bu yöntem her açılışta yeniden arşiv çıkarılmasını önler.
 
 Yayımlanmış sürümün Windows x64 taşınabilir EXE dosyasını bu deponun **Releases** bölümünden indirin. EXE dosyası kaynak deposunda tutulmaz. Dosyayı yerel bir klasöre alın ve çalıştırın. Dış sağlayıcı API anahtarları kullanıcı tarafından Ayarlar ekranında girilir; dağıtım paketi kişisel anahtar veya çalışma veritabanı içermez.
 
@@ -54,7 +54,7 @@ Kaynak deposu büyük üçüncü taraf çalıştırılabilir dosyalarını içer
 npm run package
 ```
 
-Bu komut üretim derlemesini yapar ve Electron Builder ile taşınabilir Windows paketi oluşturur. Sonuç `release/3.0.2-updated/` klasöründedir. `win-unpacked/` ara paketleme çıktısıdır; son kullanıcıya taşınabilir EXE dağıtılır. Paketlemede Electron ve paketleme araçlarının ilk indirmesi için internet erişimi gerekebilir.
+Bu komut üretim derlemesini yapar ve Electron Builder ile taşınabilir Windows paketi oluşturur. Sonuç `release/3.0.3/` klasöründedir. `win-unpacked/` ara paketleme çıktısıdır; son kullanıcıya taşınabilir EXE dağıtılır. Paketlemede Electron ve paketleme araçlarının ilk indirmesi için internet erişimi gerekebilir.
 
 ## Güvenlik doğrulaması
 

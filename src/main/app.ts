@@ -123,7 +123,8 @@ export class Application {
     container.register('workerPool', workerPool);
 
     // ── 2. Register ALL Modules (no initialization yet for Category B) ──────
-    // Category A — Dashboard is the only core module that initializes at startup
+    // Category A — dashboard, internet and correlation initialize at startup
+    // (see CORE_MODULE_NAMES in core/module-manager.ts)
     moduleManager.registerModule(new DashboardModule());
 
     // Category B — All lazy, init on first navigation
@@ -264,12 +265,15 @@ export class Application {
       };
     });
 
+    // Elevation is fixed for the process lifetime; spawn `net session` only once.
+    let isAdminCheck: Promise<boolean> | null = null;
     safeIpcHandle('app:is-admin', async () => {
-      return new Promise((resolve) => {
-        require('child_process').exec('net session', (err: any) => {
+      isAdminCheck ??= new Promise<boolean>((resolve) => {
+        require('child_process').exec('net session', { windowsHide: true }, (err: any) => {
           resolve(err ? false : true);
         });
       });
+      return isAdminCheck;
     });
 
     safeIpcHandle('app:toggle-module', async (_event, { moduleName, enable }) => {

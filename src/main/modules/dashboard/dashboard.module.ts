@@ -27,15 +27,15 @@ export class DashboardModule extends BaseModule {
   }
 
   private getMetrics() {
-    this.logger.info('[Dashboard Trace] getMetrics() called. Invoking Win32Metrics...');
+    this.logger.debug('[Dashboard Trace] getMetrics() called. Invoking Win32Metrics...');
     const cpuUsage = Win32Metrics.getCpuUsagePercent();
-    this.logger.info(`[Dashboard Trace] CPU: ${cpuUsage}`);
+    this.logger.debug(`[Dashboard Trace] CPU: ${cpuUsage}`);
     
     const memUsage = Win32Metrics.getMemoryUsage();
-    this.logger.info(`[Dashboard Trace] RAM: ${JSON.stringify(memUsage)}`);
+    this.logger.debug(`[Dashboard Trace] RAM: ${JSON.stringify(memUsage)}`);
     
     const diskUsage = Win32Metrics.getDiskUsage();
-    this.logger.info(`[Dashboard Trace] Disk: ${JSON.stringify(diskUsage)}`);
+    this.logger.debug(`[Dashboard Trace] Disk: ${JSON.stringify(diskUsage)}`);
 
     // Zero-Assumption: Calculate live physical connected adapters
     const interfaces = os.networkInterfaces();
@@ -62,7 +62,7 @@ export class DashboardModule extends BaseModule {
       connectedAdapters,
     };
 
-    this.logger.info(`[Dashboard Trace] Returning payload: ${JSON.stringify(data)}`);
+    this.logger.debug(`[Dashboard Trace] Returning payload: ${JSON.stringify(data)}`);
     return data;
   }
 

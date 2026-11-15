@@ -1,3 +1,4 @@
+import { useOperationStatus } from '../../hooks/use-operation-status';
 import { message } from '../../i18n';
 import { RuleLibrary } from '../../components/common/RuleLibrary';
 import { t as translateText } from "../../i18n";
@@ -9,22 +10,29 @@ export const ThreatHuntingView: React.FC = () => {
   const { t } = useTranslation();
   const [query, setQuery] = useState<string>('EventID=4688 AND CommandLine MATCHES ".*powershell.*"');
   const [results, setResults] = useState<any[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const operation = useOperationStatus();
+  const isSearching = operation.busy;
+  const [completed, setCompleted] = useState(false);
+  const [recordsScanned, setRecordsScanned] = useState<number | null>(null);
 
   const [error, setError] = useState('');
   const handleSearch = async () => {
-    setIsSearching(true);setError('');setResults([]);
+    if (!query.trim() || !operation.start()) return;
+    setCompleted(false);setRecordsScanned(null);setError('');setResults([]);
     try {
       const response = await window.lsip.invoke('ioc:evaluate-rule', {kind:'Hunt',content:query});
       if (!response?.success) throw new Error(response?.error?.message || response?.error || 'Rule evaluation failed');
+      if (!Array.isArray(response.data?.matchedEvents)) throw new Error(t('operation.unavailable'));
       setResults(response.data.matchedEvents);
+      setRecordsScanned(typeof response.data.recordsScanned === 'number' ? response.data.recordsScanned : null);
+      setCompleted(true);
     } catch (e:any) { setError(e.message); }
-    finally { setIsSearching(false); }
+    finally { operation.finish(); }
   };
 
   return (
     <div className="view-container" style={{ padding: '20px', gap: '20px', overflowY: 'auto' }}>
-      <RuleLibrary kind="Hunt" content={query} onLoad={value => {setQuery(value); setResults([]); setError('')}} />
+      <RuleLibrary kind="Hunt" content={query} onLoad={value => {if (isSearching) return; setQuery(value); setResults([]); setError(''); setCompleted(false); setRecordsScanned(null)}} />
       {error && <div role="alert" style={{color:"var(--accent-danger)"}}>{message(error)}</div>}
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -46,11 +54,12 @@ export const ThreatHuntingView: React.FC = () => {
           className="fluent-input"
           style={{ flex: 1, fontFamily: 'var(--font-mono)', fontSize: '0.85rem', height: '42px' }}
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          disabled={isSearching}
+          onChange={(e) => {setQuery(e.target.value); setCompleted(false); setResults([]); setError('')}}
           placeholder={translateText("interfaceText.message181")}
         />
-        <button className="fluent-button" style={{ background: 'var(--accent-primary)', color: 'white', height: '42px', padding: '0 20px', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={handleSearch} disabled={isSearching}>
-          <Play size={16} /> {translateText("interfaceText.message182")} </button>
+        <button className="fluent-button" style={{ background: 'var(--accent-primary)', color: 'white', height: '42px', padding: '0 20px', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={handleSearch} disabled={isSearching || !query.trim()}>
+          <Play size={16} /> {isSearching ? t('operation.running', {seconds: operation.seconds}) : translateText('interfaceText.message182')} </button>
       </div>
 
       {/* Query Results Table */}
@@ -85,7 +94,7 @@ export const ThreatHuntingView: React.FC = () => {
             </tbody>
           </table>
         ) : (
-          <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontStyle: 'italic', textAlign: 'center', padding: '30px' }}> {translateText("interfaceText.message189")} </div>
+          <div role="status" style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontStyle: 'italic', textAlign: 'center', padding: '30px' }}> {isSearching ? t('operation.running', {seconds: operation.seconds}) : error ? t('operation.unavailable') : !completed ? t('operation.huntInitial') : recordsScanned === 0 ? t('operation.noEvents') : t('operation.noMatches')} </div>
         )}
       </div>
     </div>

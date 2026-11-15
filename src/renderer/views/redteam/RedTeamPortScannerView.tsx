@@ -1,3 +1,4 @@
+import { useOperationStatus } from '../../hooks/use-operation-status';
 import { message } from "../../i18n";
 import React, { useEffect, useState } from 'react';
 import { Crosshair, Play, CheckCircle2, ShieldAlert, Cpu, Terminal, RefreshCw } from 'lucide-react';
@@ -7,7 +8,8 @@ export const RedTeamPortScannerView: React.FC = () => {
   const { t } = useTranslation();
   const [target, setTarget] = useState<string>('127.0.0.1');
   const [nmapStatus, setNmapStatus] = useState<{ available: boolean; message: string } | null>(null);
-  const [scanning, setScanning] = useState<boolean>(false);
+  const operation = useOperationStatus();
+  const scanning = operation.busy;
   const [scanResult, setScanResult] = useState<any>(null);
   const [scanError, setScanError] = useState<string | null>(null);
 
@@ -21,23 +23,23 @@ export const RedTeamPortScannerView: React.FC = () => {
 
   const handleScan = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!target) return;
-    setScanning(true);
+    if (!target.trim() || !operation.start()) return;
+
     setScanResult(null);
     setScanError(null);
 
     try {
       const res = await window.lsip.invoke('redteam:scan-ports', { target });
-      if (res.success) {
+      if (res?.success && Array.isArray(res.openPorts)) {
         setScanResult(res);
       } else {
-        setScanError(res.error || 'Port taraması gerçekleştirilemedi.');
+        setScanError(res?.error || t('operation.unavailable'));
       }
     } catch (err: any) {
       console.error('Scan failed:', err);
       setScanError(err.message || 'Port taraması sırasında beklenmeyen bir hata oluştu.');
     } finally {
-      setScanning(false);
+      operation.finish();
     }
   };
 
@@ -80,14 +82,15 @@ export const RedTeamPortScannerView: React.FC = () => {
           />
           <button type="submit" className="fluent-button" disabled={scanning} style={{ backgroundColor: '#dc2626', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
             {scanning ? <RefreshCw size={16} className="spin" /> : <Play size={16} />}
-            {scanning ? t('common.loading') : t('redTeamView.startScan')}
+            {scanning ? t('operation.running', {seconds: operation.seconds}) : t('redTeamView.startScan')}
           </button>
         </form>
       </div>
 
+      {!scanResult && !scanError && <div role="status" style={{color: 'var(--text-secondary)'}}>{scanning ? t('operation.running', {seconds: operation.seconds}) : t('operation.scanInitial')}</div>}
       {/* Error Message */}
       {scanError && (
-        <div className="fluent-card" style={{ padding: '14px 18px', backgroundColor: 'rgba(239, 68, 68, 0.1)', borderLeft: '4px solid #ef4444', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div role="alert" className="fluent-card" style={{ padding: '14px 18px', backgroundColor: 'rgba(239, 68, 68, 0.1)', borderLeft: '4px solid #ef4444', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <ShieldAlert size={20} style={{ color: '#ef4444' }} />
           <span style={{ color: '#f87171', fontSize: '0.85rem' }}>{message(scanError)}</span>
         </div>
@@ -101,7 +104,7 @@ export const RedTeamPortScannerView: React.FC = () => {
           </h3>
 
           {scanResult.openPorts?.length === 0 ? (
-            <div style={{ padding: '20px', color: 'var(--text-secondary)' }}>{t('common.noData')}</div>
+            <div style={{ padding: '20px', color: 'var(--text-secondary)' }}>{t('operation.noPorts')}</div>
           ) : (
             <table className="fluent-table" style={{ width: '100%', fontSize: '0.85rem' }}>
               <thead>

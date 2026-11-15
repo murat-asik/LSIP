@@ -9,6 +9,11 @@ const log = createModuleLogger('connection-tracker');
 export class ConnectionTracker {
   private static pidToNameMap = new Map<number, string>();
 
+  /** Release the PID→name cache (rebuilt on the next collection). */
+  public static clearCaches(): void {
+    this.pidToNameMap.clear();
+  }
+
   /**
    * Fetch active TCP/UDP connections via netstat -ano.
    */

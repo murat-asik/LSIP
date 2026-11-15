@@ -387,7 +387,7 @@ export class ProviderManager {
       }
 
       if (provider.capabilities.requiresApiKey && (!config.apiKey || config.apiKey.trim() === '')) {
-        statuses[id] = { ok: false, message: 'API Key Required', status: 'Invalid API Key' };
+        statuses[id] = { ok: false, message: 'API Key Not Added', status: 'API Key Not Added' };
         continue;
       }
 
@@ -431,7 +431,7 @@ export class ProviderManager {
       if (!enabled) {
         status = 'Disabled';
       } else if (!configured && provider.capabilities.requiresApiKey) {
-        status = 'Invalid API Key';
+        status = 'API Key Not Added';
       } else if (!connectivityState.isOnlineMode) {
         status = 'Waiting For Connection';
       } else if (test?.ok) {

@@ -177,8 +177,11 @@ export class DatabaseManager {
     db.serialize(() => {
       db.run('PRAGMA journal_mode = WAL');
       db.run('PRAGMA synchronous = NORMAL');
-      db.run('PRAGMA cache_size = -64000'); // 64MB
-      db.run('PRAGMA temp_store = MEMORY');
+      // 9 databases are open at once; 64MB each could pin ~576MB of page cache.
+      // 8MB per DB keeps hot pages cached while capping the worst case at ~72MB.
+      db.run('PRAGMA cache_size = -8000'); // 8MB
+      // Large sorts/temp tables spill to disk instead of growing the heap.
+      db.run('PRAGMA temp_store = DEFAULT');
       db.run('PRAGMA busy_timeout = 5000');
     });
   }

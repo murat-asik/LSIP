@@ -29,6 +29,13 @@ export class ProcessCollector {
   private static identities = new Map<number,string>();
   private static pendingSnapshot: Promise<ProcessInfo[]> | undefined;
 
+  /** Release per-process caches (rebuilt on the next snapshot). */
+  public static clearCaches(): void {
+    this.cache.clear();
+    this.lastCpuSamples.clear();
+    this.identities.clear();
+  }
+
   public static getProcessSnapshot(): Promise<ProcessInfo[]> {
     if(this.pendingSnapshot)return this.pendingSnapshot;
     this.pendingSnapshot=this.collectSnapshot().finally(()=>{this.pendingSnapshot=undefined;});

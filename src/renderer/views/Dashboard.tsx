@@ -1,23 +1,20 @@
 import { t as translateText } from "../i18n";
 import React, { useEffect } from 'react';
 import { useAppStore } from '../stores/app.store';
+import { createViewPolling, stopViewPolling } from '../hooks/view-polling';
 import { useTranslation } from '../i18n';
 import {
   ShieldAlert,
   Cpu,
   Network,
   CheckCircle,
-  AlertTriangle,
-  Play,
-  Settings,
   Activity,
 } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
-  const { systemMetrics, setSystemMetrics, setActiveTab } = useAppStore();
+  const { systemMetrics, setSystemMetrics } = useAppStore();
   const { t } = useTranslation();
   const [stats, setStats] = React.useState({ processes: 0, assets: 0, connections: 0, riskScore: null as number|null });
-  const [isAdmin, setIsAdmin] = React.useState(false);
 
   // Fetch metrics updates
   useEffect(() => {
@@ -43,18 +40,15 @@ export const Dashboard: React.FC = () => {
         if (statsRes?.success && statsRes.data) {
           setStats(statsRes.data);
         }
-        const adminRes = await window.lsip.invoke('app:is-admin');
-        if (adminRes !== undefined) {
-          setIsAdmin(adminRes);
-        }
       } catch (e) {
         console.error('Failed to fetch dashboard metrics:', e);
       }
     };
 
     fetchMetrics();
-    const interval = setInterval(fetchMetrics, 3000);
-    return () => clearInterval(interval);
+    // Poll only while the dashboard tab is visible.
+    const polling = createViewPolling('dashboard', fetchMetrics, 3000);
+    return () => stopViewPolling(polling);
   }, []);
 
   return (

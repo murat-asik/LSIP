@@ -182,7 +182,7 @@ export class EventExplorerModule extends BaseModule {
         computer: r.computer,
         userSid: r.user_sid || undefined,
         userName: r.user_name || undefined,
-        message: r.message,
+        message: r.message ?? '',
         xmlData: r.xml_data || undefined,
         parsedData: r.parsed_data ? JSON.parse(r.parsed_data) : undefined,
         isBookmarked: r.is_bookmarked === 1,

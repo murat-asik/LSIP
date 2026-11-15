@@ -246,9 +246,10 @@ export class WorkerPool {
    * This dynamically shrinks the pool when demand is low.
    */
   private scheduleWorkerIdleTermination(worker: Worker): void {
-    // Only shrink if pool has more than 1 idle worker
-    const idleCount = this.workers.length - this.activeWorkers.size;
-    if (idleCount <= 1) return;
+    // Shrink to zero when idle: workers are cheap to respawn lazily, while an
+    // idle V8 isolate holds ~10-20MB for the life of the app.
+    const existing = this.workerIdleTimers.get(worker);
+    if (existing) clearTimeout(existing);
 
     const timer = setTimeout(() => {
       if (!this.activeWorkers.has(worker)) {

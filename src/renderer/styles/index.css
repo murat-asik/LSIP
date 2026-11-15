@@ -24,7 +24,7 @@
   /* Glassmorphism */
   --glass-bg: rgba(12, 17, 30, 0.75);
   --glass-border: rgba(255, 255, 255, 0.05);
-  --glass-blur: blur(20px);
+  --glass-blur: blur(8px); /* lighter blur: large radii are costly GPU passes */
   
   /* Typography */
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -69,7 +69,7 @@
   /* Glassmorphism */
   --glass-bg: rgba(255, 255, 255, 0.85);
   --glass-border: rgba(0, 0, 0, 0.08);
-  --glass-blur: blur(20px);
+  --glass-blur: blur(8px); /* lighter blur: large radii are costly GPU passes */
 
   /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);

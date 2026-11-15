@@ -3,6 +3,14 @@ const fs=require('fs'),assert=require('assert/strict'),{env}=require('./security
 const results=[];async function test(name,fn){try{await fn();results.push({name,pass:true})}catch(error){results.push({name,pass:false,error:error.message})}}
 const config={id:'fixture',name:'Fixture',enabled:true,apiKey:'SYNTHETIC-ONLY',timeoutMs:1000,rateLimit:{requestsPerMinute:60,requestsPerDay:1000}};
 (async()=>{
+ for(const apiKey of [undefined, '', '   '])await test('Missing key skips network work: '+JSON.stringify(apiKey),async()=>{
+  const missing={...config,apiKey};let calls=0;
+  const provider={...config,capabilities:{requiresApiKey:true,supportedTypes:['ip']},initialize:async()=>{calls++},healthCheck:async()=>{calls++;return true}};
+  const e=env({'./secure-config':{secureConfigManager:{getAllProviderCredentials:()=>[missing],getGlobalConfig:()=>({enabled:true}),getProviderCredentials:()=>missing}}});
+  const manager=new(e.load('src/main/modules/internet-intelligence/provider-manager.ts').ProviderManager)();manager.registerProvider(provider);
+  assert.equal((await manager.testConnections()).fixture.status,'API Key Not Added');
+  const health=(await manager.getDetailedHealth())[0];assert.equal(health.status,'API Key Not Added');assert.equal(health.configured,false);assert.equal(calls,0);
+ });
  await test('Timeout-only configuration changes reach the provider',async()=>{
   const e=env(),Base=e.load('src/main/modules/internet-intelligence/base-provider.ts').BaseIntelligenceProvider;
   const p=new Base();await p.initialize(config);await p.initialize({...config,timeoutMs:2000});assert.equal(p.config.timeoutMs,2000);
